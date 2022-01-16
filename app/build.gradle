@@ -1,6 +1,9 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -72,4 +75,8 @@ dependencies {
 
     def fragment_version = "1.2.2"
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+// Dagger - Hilt
+    implementation "com.google.dagger:hilt-android:2.39.1"
+    kapt "com.google.dagger:hilt-android-compiler:2.37"
 }

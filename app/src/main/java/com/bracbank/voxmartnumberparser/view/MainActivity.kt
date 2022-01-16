@@ -4,17 +4,28 @@ import android.content.DialogInterface
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.bracbank.voxmartnumberparser.R
 import com.bracbank.voxmartnumberparser.databinding.ActivityMainBinding
+import com.bracbank.voxmartnumberparser.model.CountryCode
+import com.bracbank.voxmartnumberparser.viewmodel.CountryCodeViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     lateinit var binding: ActivityMainBinding
+
+   // private val viewModel by viewModels<CountryCodeViewModel>()
+    private lateinit var viewModel: CountryCodeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +34,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
         setBottomNavigationBar()
         val actionbar = supportActionBar
+        initialize()
+    }
+
+    private fun initialize() {
+        viewModel = ViewModelProvider(this)[CountryCodeViewModel::class.java]
+        getAllCountryCode()
     }
 
     /**
@@ -74,5 +91,57 @@ class MainActivity : AppCompatActivity() {
                 .setTextColor(Color.parseColor("#90FF4500"))
         }
         myQuittingDialogBox.show()
+    }
+
+    /**
+     * Inter Initial Country code function will insert some startup data for future use
+     */
+    private fun insertInitialCountryCodes() {
+        val ukCode = CountryCode(
+            countryName = "United Kingdom",
+            countryShortName = "UK",
+            countryCode = "+44",
+            nationalPrefix = "0"
+        )
+
+        val frCode = CountryCode(
+            countryName = "France",
+            countryShortName = "FR",
+            countryCode = "+33",
+            nationalPrefix = "0"
+        )
+
+        val usCode = CountryCode(
+            countryName = "United States",
+            countryShortName = "US",
+            countryCode = "+1",
+            nationalPrefix = "1"
+        )
+
+        CoroutineScope(Dispatchers.Main).launch {
+            viewModel.insertCountryCode(ukCode).also {
+                //do action here
+            }
+            viewModel.insertCountryCode(frCode).also {
+                //do action here
+            }
+            viewModel.insertCountryCode(usCode).also {
+                //do action here
+            }
+        }
+    }
+
+    /**
+     *  GET All country code
+     */
+    private fun getAllCountryCode() {
+        CoroutineScope(Dispatchers.Main).launch {
+            viewModel.getAllCountryCode().observe(this@MainActivity, {
+                if(it.isEmpty()){
+
+                }
+               // noteAdapter.submitList(it)
+            })
+        }
     }
 }
